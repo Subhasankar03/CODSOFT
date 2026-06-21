@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unbeatable Tic-Tac-Toe AI Agent</title>
+    <meta name="description" content="Play Tic-Tac-Toe against an unbeatable AI agent powered by Minimax and Alpha-Beta Pruning with real-time decision visualization.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container" id="app-container">
+        <!-- Header Controls -->
+        <header>
+            <h1 id="app-title">Tic-Tac-Toe AI</h1>
+            <div class="controls-row">
+                <button class="icon-btn" id="sound-toggle" aria-label="Toggle Sound" title="Toggle Sound">
+                    <svg viewBox="0 0 24 24" id="sound-icon-on">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                    <svg viewBox="0 0 24 24" id="sound-icon-off" style="display: none;">
+                        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
+                    <!-- Sun icon -->
+                    <svg viewBox="0 0 24 24" id="theme-icon-light" style="display: none;">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+                    </svg>
+                    <!-- Moon icon -->
+                    <svg viewBox="0 0 24 24" id="theme-icon-dark">
+                        <path d="M12.3 2a10 10 0 0 0-1.9 14 10 10 0 0 0 14 3.9 1 1 0 0 0-.2-1.7 8 8 0 1 1-10.1-10.1 1 1 0 0 0-1.8-.1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Configuration Settings -->
+        <section class="setup-panel">
+            <div class="select-group">
+                <label for="game-mode">Opponent</label>
+                <div class="custom-select">
+                    <select id="game-mode">
+                        <option value="ai-vs-human">AI Agent vs. Human</option>
+                        <option value="human-vs-human">Human vs. Human</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="select-group" id="difficulty-group">
+                <label for="difficulty">AI Difficulty</label>
+                <div class="custom-select">
+                    <select id="difficulty">
+                        <option value="unbeatable" selected>Unbeatable (Minimax)</option>
+                        <option value="challenging">Challenging (75% Smart)</option>
+                        <option value="novice">Novice (Random)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scoreboard -->
+        <section class="score-board">
+            <div class="score-box active-player-x" id="score-x">
+                <div class="score-label">Player X</div>
+                <div class="score-val" id="val-x">0</div>
+            </div>
+            <div class="score-box" id="score-ties">
+                <div class="score-label">Ties</div>
+                <div class="score-val" id="val-ties">0</div>
+            </div>
+            <div class="score-box" id="score-o">
+                <div class="score-label">Player O</div>
+                <div class="score-val" id="val-o">0</div>
+            </div>
+        </section>
+
+        <!-- Turn status indicator -->
+        <div class="status-bar" id="status-text">
+            <span>Your turn (X)</span>
+        </div>
+
+        <!-- 3x3 Game Grid -->
+        <main class="board-container" id="board">
+            <button class="cell" data-index="0" aria-label="Cell 0, top left">
+                <div class="ai-weight" data-cell="0">0</div>
+            </button>
+            <button class="cell" data-index="1" aria-label="Cell 1, top center">
+                <div class="ai-weight" data-cell="1">0</div>
+            </button>
+            <button class="cell" data-index="2" aria-label="Cell 2, top right">
+                <div class="ai-weight" data-cell="2">0</div>
+            </button>
+            <button class="cell" data-index="3" aria-label="Cell 3, middle left">
+                <div class="ai-weight" data-cell="3">0</div>
+            </button>
+            <button class="cell" data-index="4" aria-label="Cell 4, middle center">
+                <div class="ai-weight" data-cell="4">0</div>
+            </button>
+            <button class="cell" data-index="5" aria-label="Cell 5, middle right">
+                <div class="ai-weight" data-cell="5">0</div>
+            </button>
+            <button class="cell" data-index="6" aria-label="Cell 6, bottom left">
+                <div class="ai-weight" data-cell="6">0</div>
+            </button>
+            <button class="cell" data-index="7" aria-label="Cell 7, bottom center">
+                <div class="ai-weight" data-cell="7">0</div>
+            </button>
+            <button class="cell" data-index="8" aria-label="Cell 8, bottom right">
+                <div class="ai-weight" data-cell="8">0</div>
+            </button>
+        </main>
+
+        <!-- AI Thoughts Dashboard -->
+        <section class="dashboard-panel" id="ai-dashboard">
+            <div class="dashboard-title">
+                <h2>AI Thoughts</h2>
+                <label class="toggle-switch" id="toggle-weights-label" title="Show Minimax values on grid cells">
+                    <span>Show Weights</span>
+                    <input type="checkbox" id="toggle-weights" checked>
+                    <div class="slider"></div>
+                </label>
+            </div>
+            <div class="ai-status-log" id="ai-log">Initializing Tic-Tac-Toe AI Agent system...</div>
+        </section>
+
+        <!-- Action Row -->
+        <section class="action-row">
+            <button class="primary-btn" id="restart-btn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+                Restart Game
+            </button>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
