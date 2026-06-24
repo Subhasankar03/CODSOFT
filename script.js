@@ -1,735 +1,897 @@
-// Audio Synthesis System
-class AudioSynth {
-    constructor() {
-        this.ctx = null;
-        this.enabled = true;
+// Movie Dataset
+const movies = [
+    {
+        id: 1,
+        title: "Interstellar",
+        year: 2014,
+        genres: ["Sci-Fi", "Drama", "Adventure"],
+        description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+        rating: 4.6,
+        backdrop: "linear-gradient(135deg, #0f172a, #1e3a8a, #3b82f6)"
+    },
+    {
+        id: 2,
+        title: "The Dark Knight",
+        year: 2008,
+        genres: ["Action", "Drama", "Thriller"],
+        description: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.",
+        rating: 4.9,
+        backdrop: "linear-gradient(135deg, #1e293b, #0f172a, #475569)"
+    },
+    {
+        id: 3,
+        title: "Inception",
+        year: 2010,
+        genres: ["Action", "Sci-Fi", "Thriller"],
+        description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+        rating: 4.8,
+        backdrop: "linear-gradient(135deg, #0f172a, #312e81, #4f46e5)"
+    },
+    {
+        id: 4,
+        title: "The Matrix",
+        year: 1999,
+        genres: ["Action", "Sci-Fi"],
+        description: "When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.",
+        rating: 4.7,
+        backdrop: "linear-gradient(135deg, #022c22, #064e3b, #10b981)"
+    },
+    {
+        id: 5,
+        title: "Pulp Fiction",
+        year: 1994,
+        genres: ["Drama", "Thriller"],
+        description: "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+        rating: 4.5,
+        backdrop: "linear-gradient(135deg, #1c1917, #44403c, #78716c)"
+    },
+    {
+        id: 6,
+        title: "The Shawshank Redemption",
+        year: 1994,
+        genres: ["Drama"],
+        description: "Over the course of several years, two convicts form a friendship, seeking consolation and, eventually, redemption through basic compassion.",
+        rating: 4.9,
+        backdrop: "linear-gradient(135deg, #172554, #1e3a8a, #2563eb)"
+    },
+    {
+        id: 7,
+        title: "La La Land",
+        year: 2016,
+        genres: ["Romance", "Drama", "Comedy"],
+        description: "While navigating their careers in Los Angeles, a pianist and an actress fall in love while attempting to reconcile their aspirations for the future.",
+        rating: 4.3,
+        backdrop: "linear-gradient(135deg, #581c87, #701a75, #ec4899)"
+    },
+    {
+        id: 8,
+        title: "Pride & Prejudice",
+        year: 2005,
+        genres: ["Romance", "Drama"],
+        description: "Sparks fly when spirited Elizabeth Bennet meets single, rich, and proud Mr. Darcy. But Mr. Darcy reluctantly finds himself falling in love with a woman beneath his class.",
+        rating: 4.4,
+        backdrop: "linear-gradient(135deg, #4c0519, #881337, #db2777)"
+    },
+    {
+        id: 9,
+        title: "The Grand Budapest Hotel",
+        year: 2014,
+        genres: ["Comedy", "Drama", "Adventure"],
+        description: "A writer relates his adventures at a renowned European resort hotel between the first and second World Wars with a concierge who is wrongly framed for murder.",
+        rating: 4.2,
+        backdrop: "linear-gradient(135deg, #451a03, #78350f, #d97706)"
+    },
+    {
+        id: 10,
+        title: "Superbad",
+        year: 2007,
+        genres: ["Comedy"],
+        description: "Two co-dependent high school seniors are forced to deal with separation anxiety after their plan to stage a booze-soaked party goes awry.",
+        rating: 4.1,
+        backdrop: "linear-gradient(135deg, #3f2f0f, #713f12, #ca8a04)"
+    },
+    {
+        id: 11,
+        title: "Spirited Away",
+        year: 2001,
+        genres: ["Fantasy", "Adventure", "Drama"],
+        description: "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.",
+        rating: 4.6,
+        backdrop: "linear-gradient(135deg, #1e1b4b, #312e81, #6366f1)"
+    },
+    {
+        id: 12,
+        title: "The Lord of the Rings: The Fellowship of the Ring",
+        year: 2001,
+        genres: ["Fantasy", "Adventure", "Action"],
+        description: "A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
+        rating: 4.9,
+        backdrop: "linear-gradient(135deg, #14532d, #166534, #22c55e)"
+    },
+    {
+        id: 13,
+        title: "Se7en",
+        year: 1995,
+        genres: ["Mystery", "Thriller", "Drama"],
+        description: "Two detectives, a rookie and a veteran, hunt a serial killer who uses the seven deadly sins as his motives.",
+        rating: 4.7,
+        backdrop: "linear-gradient(135deg, #0f172a, #1e293b, #334155)"
+    },
+    {
+        id: 14,
+        title: "Knives Out",
+        year: 2019,
+        genres: ["Mystery", "Comedy", "Thriller"],
+        description: "A detective investigates the death of the patriarch of an eccentric, combative family.",
+        rating: 4.3,
+        backdrop: "linear-gradient(135deg, #311042, #581c87, #a855f7)"
+    },
+    {
+        id: 15,
+        title: "Eternal Sunshine of the Spotless Mind",
+        year: 2004,
+        genres: ["Romance", "Sci-Fi", "Drama"],
+        description: "When their relationship turns sour, a couple undergoes a medical procedure to have each other erased from their memories.",
+        rating: 4.4,
+        backdrop: "linear-gradient(135deg, #0369a1, #0284c7, #06b6d4)"
     }
-
-    init() {
-        if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume();
-        }
-    }
-
-    play(type) {
-        if (!this.enabled) return;
-        try {
-            this.init();
-            const now = this.ctx.currentTime;
-            
-            switch (type) {
-                case 'click': {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(400, now);
-                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.05);
-                    gain.gain.setValueAtTime(0.05, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.05);
-                    break;
-                }
-                case 'move-x': {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(261.63, now); // C4
-                    osc.frequency.exponentialRampToValueAtTime(523.25, now + 0.15); // C5
-                    gain.gain.setValueAtTime(0.1, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                    break;
-                }
-                case 'move-o': {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.exponentialRampToValueAtTime(329.63, now + 0.15); // E4
-                    gain.gain.setValueAtTime(0.1, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                    break;
-                }
-                case 'think': {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(150, now);
-                    gain.gain.setValueAtTime(0.03, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.08);
-                    break;
-                }
-                case 'win': {
-                    const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
-                    notes.forEach((freq, index) => {
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + index * 0.1);
-                        gain.gain.setValueAtTime(0.08, now + index * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.1 + 0.25);
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start(now + index * 0.1);
-                        osc.stop(now + index * 0.1 + 0.25);
-                    });
-                    break;
-                }
-                case 'lose': {
-                    const notes = [392.00, 349.23, 311.13, 261.63]; // G4, F4, Eb4, C4
-                    notes.forEach((freq, index) => {
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(freq, now + index * 0.12);
-                        gain.gain.setValueAtTime(0.06, now + index * 0.12);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.12 + 0.3);
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start(now + index * 0.12);
-                        osc.stop(now + index * 0.12 + 0.3);
-                    });
-                    break;
-                }
-                case 'draw': {
-                    const notes = [330, 330];
-                    notes.forEach((freq, index) => {
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + index * 0.15);
-                        gain.gain.setValueAtTime(0.08, now + index * 0.15);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.15 + 0.12);
-                        osc.connect(gain);
-                        gain.connect(this.ctx.destination);
-                        osc.start(now + index * 0.15);
-                        osc.stop(now + index * 0.15 + 0.12);
-                    });
-                    break;
-                }
-            }
-        } catch (e) {
-            console.warn('Web Audio synthesis failed or blocked:', e);
-        }
-    }
-}
-
-// Game State Constants & Variables
-const winLines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-    [0, 4, 8], [2, 4, 6]             // diagonals
 ];
 
-let board = Array(9).fill('');
-let gameMode = 'ai-vs-human';
-let difficulty = 'unbeatable';
-let currentPlayer = 'X';
-let scores = { X: 0, O: 0, Ties: 0 };
-let isGameActive = true;
-let aiIsThinking = false;
-let nodeCount = 0;
-let pruneCount = 0;
+// All Genres represented in dataset
+const genresList = ["Action", "Sci-Fi", "Adventure", "Drama", "Romance", "Comedy", "Thriller", "Fantasy", "Mystery"];
 
-// DOM Elements
-const cells = document.querySelectorAll('.cell');
-const statusText = document.getElementById('status-text');
-const restartBtn = document.getElementById('restart-btn');
-const modeSelect = document.getElementById('game-mode');
-const difficultySelect = document.getElementById('difficulty');
-const difficultyGroup = document.getElementById('difficulty-group');
-const aiDashboard = document.getElementById('ai-dashboard');
-const toggleWeights = document.getElementById('toggle-weights');
-const aiLog = document.getElementById('ai-log');
-const appContainer = document.getElementById('app-container');
-const themeToggle = document.getElementById('theme-toggle');
-const soundToggle = document.getElementById('sound-toggle');
-
-const valX = document.getElementById('val-x');
-const valO = document.getElementById('val-o');
-const valTies = document.getElementById('val-ties');
-
-const scoreBoxX = document.getElementById('score-x');
-const scoreBoxO = document.getElementById('score-o');
-
-const themeIconLight = document.getElementById('theme-icon-light');
-const themeIconDark = document.getElementById('theme-icon-dark');
-const soundIconOn = document.getElementById('sound-icon-on');
-const soundIconOff = document.getElementById('sound-icon-off');
-
-// Synthesizer instance
-const audio = new AudioSynth();
-
-// Initialize Game Configurations from localStorage
-function loadSettings() {
-    // Scoreboard
-    const savedScores = localStorage.getItem('ttt_scores');
-    if (savedScores) {
-        scores = JSON.parse(savedScores);
-        updateScoreboardUI();
+// Mock Users Ratings Database
+const mockUsers = {
+    alex: {
+        name: "Alex (Sci-Fi Fanatic)",
+        ratings: { 1: 5, 2: 3, 3: 5, 4: 4, 15: 4, 10: 1, 8: 1, 7: 2 }
+    },
+    chloe: {
+        name: "Chloe (Romance Lover)",
+        ratings: { 7: 5, 8: 5, 15: 4, 6: 4, 4: 1, 2: 2, 13: 1 }
+    },
+    marcus: {
+        name: "Marcus (Action & Thriller Buff)",
+        ratings: { 2: 5, 3: 5, 4: 4, 13: 5, 5: 4, 8: 1, 10: 2 }
+    },
+    sophia: {
+        name: "Sophia (Drama Devotee)",
+        ratings: { 6: 5, 1: 4, 2: 4, 8: 4, 5: 3, 10: 1 }
+    },
+    ethan: {
+        name: "Ethan (Indie & Classics)",
+        ratings: { 5: 5, 6: 5, 9: 5, 11: 4, 4: 2, 10: 2 }
     }
+};
 
-    // Sound
-    const savedSound = localStorage.getItem('ttt_sound_enabled');
-    if (savedSound !== null) {
-        audio.enabled = savedSound === 'true';
-        updateSoundUI();
-    }
+// Application State
+const state = {
+    activeProfile: "custom", // 'custom' or one of the mock keys
+    activeAlgorithm: "content", // 'content' or 'collaborative'
+    customRatings: {}, // Movie ID -> Rating (1-5) for current user sessions
+    customGenreWeights: {}, // Genre name -> weight (1.5 if toggled active, 0 otherwise)
+    genreFilters: "all",
+    searchQuery: ""
+};
 
-    // Theme
-    const savedTheme = localStorage.getItem('ttt_theme');
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        themeIconLight.style.display = 'block';
-        themeIconDark.style.display = 'none';
-    }
+// Initialize App
+window.addEventListener("DOMContentLoaded", () => {
+    // Set initial genre weights
+    genresList.forEach(genre => {
+        state.customGenreWeights[genre] = 0;
+    });
 
-    // Weights toggling
-    const savedWeights = localStorage.getItem('ttt_show_weights');
-    if (savedWeights !== null) {
-        toggleWeights.checked = savedWeights === 'true';
-        if (toggleWeights.checked) {
-            document.getElementById('board').classList.add('show-ai-weights');
-        } else {
-            document.getElementById('board').classList.remove('show-ai-weights');
-        }
-    } else {
-        document.getElementById('board').classList.add('show-ai-weights');
-    }
-}
+    // Populate UI elements
+    populateGenres();
+    populateCatalogFilters();
+    renderAll();
+});
 
-// Log messages inside the dashboard log
-function logMessage(text) {
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    aiLog.innerHTML += `\n[${timestamp}] ${text}`;
-    aiLog.scrollTop = aiLog.scrollHeight;
-}
+// Switch Dashboard / Catalog / Sandbox tabs
+function switchTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
 
-// Update Scoreboard Text
-function updateScoreboardUI() {
-    valX.textContent = scores.X;
-    valO.textContent = scores.O;
-    valTies.textContent = scores.Ties;
-}
-
-// Update Audio Controls UI
-function updateSoundUI() {
-    if (audio.enabled) {
-        soundIconOn.style.display = 'block';
-        soundIconOff.style.display = 'none';
-    } else {
-        soundIconOn.style.display = 'none';
-        soundIconOff.style.display = 'block';
-    }
-}
-
-// Particle effects
-function triggerParticles(element, color) {
-    const rect = element.getBoundingClientRect();
-    const appRect = appContainer.getBoundingClientRect();
+    document.getElementById(`tab-${tabId}`).classList.add("active");
+    document.getElementById(`tab-${tabId}-btn`).classList.add("active");
     
-    // Coordinates relative to the app container
-    const x = rect.left - appRect.left + rect.width / 2;
-    const y = rect.top - appRect.top + rect.height / 2;
-    
-    const count = 20;
-    for (let i = 0; i < count; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        particle.style.background = color;
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        
-        // Random angle and distance
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 30 + Math.random() * 60;
-        const tx = Math.cos(angle) * speed;
-        const ty = Math.sin(angle) * speed;
-        
-        particle.style.setProperty('--tx', `${tx}px`);
-        particle.style.setProperty('--ty', `${ty}px`);
-        
-        appContainer.appendChild(particle);
-        
-        // Cleanup particle
-        setTimeout(() => {
-            particle.remove();
-        }, 800);
+    // Rerender when shifting to Sandbox to show correct formulas
+    if (tabId === "sandbox") {
+        renderSandboxCalculations();
     }
 }
 
-// SVG Builders
-function getXSVG() {
-    return `
-        <svg class="mark-svg mark-x" viewBox="0 0 24 24">
-            <line x1="4" y1="4" x2="20" y2="20"></line>
-            <line x1="20" y1="4" x2="4" y2="20"></line>
-        </svg>
-    `;
-}
-
-function getOSVG() {
-    return `
-        <svg class="mark-svg mark-o" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8"></circle>
-        </svg>
-    `;
-}
-
-// Core evaluation function
-function checkWinner(b) {
-    for (let line of winLines) {
-        const [a, c, d] = line;
-        if (b[a] && b[a] === b[c] && b[a] === b[d]) {
-            return { winner: b[a], line: line };
-        }
-    }
-    if (!b.includes('')) {
-        return { winner: 'Tie', line: null };
-    }
-    return null;
-}
-
-// Evaluates the board index strictly for Minimax
-// Returns +10 if 'O' wins, -10 if 'X' wins, 0 otherwise
-function evaluateBoard(b) {
-    const check = checkWinner(b);
-    if (check) {
-        if (check.winner === 'O') return 10;
-        if (check.winner === 'X') return -10;
-    }
-    return 0;
-}
-
-// Minimax algorithm with Alpha-Beta Pruning
-function minimax(tempBoard, depth, isMaximizing, alpha, beta) {
-    nodeCount++;
-    const score = evaluateBoard(tempBoard);
-
-    // Terminal states
-    if (score === 10) return score - depth; // Prefer sooner wins
-    if (score === -10) return score + depth; // Delay opponent wins
-    if (!tempBoard.includes('')) return 0;
-
-    if (isMaximizing) {
-        let maxEval = -Infinity;
-        for (let i = 0; i < 9; i++) {
-            if (tempBoard[i] === '') {
-                tempBoard[i] = 'O';
-                const evaluation = minimax(tempBoard, depth + 1, false, alpha, beta);
-                tempBoard[i] = '';
-                maxEval = Math.max(maxEval, evaluation);
-                alpha = Math.max(alpha, evaluation);
-                if (beta <= alpha) {
-                    pruneCount++;
-                    break;
-                }
-            }
-        }
-        return maxEval;
-    } else {
-        let minEval = Infinity;
-        for (let i = 0; i < 9; i++) {
-            if (tempBoard[i] === '') {
-                tempBoard[i] = 'X';
-                const evaluation = minimax(tempBoard, depth + 1, true, alpha, beta);
-                tempBoard[i] = '';
-                minEval = Math.min(minEval, evaluation);
-                beta = Math.min(beta, evaluation);
-                if (beta <= alpha) {
-                    pruneCount++;
-                    break;
-                }
-            }
-        }
-        return minEval;
-    }
-}
-
-// Compute ratings/weights for all currently available moves
-function getMoveWeights() {
-    const weights = {};
-    nodeCount = 0;
-    pruneCount = 0;
-
-    for (let i = 0; i < 9; i++) {
-        if (board[i] === '') {
-            // Predict weight from this point onwards. AI plays O, so we maximize O.
-            board[i] = 'O';
-            // Next turn is minimizing player (Human X)
-            weights[i] = minimax(board, 0, false, -Infinity, Infinity);
-            board[i] = '';
-        }
-    }
-    return { weights, nodeCount, pruneCount };
-}
-
-// Update the overlay text and class tags based on computed weights
-function updateWeightsUI(weights, bestIndex = null) {
-    cells.forEach((cell, index) => {
-        const weightOverlay = cell.querySelector('.ai-weight');
-        if (board[index] !== '' || weights[index] === undefined) {
-            weightOverlay.style.display = 'none';
-            weightOverlay.classList.remove('best-move', 'weight-neutral', 'weight-good', 'weight-bad');
-            return;
-        }
-
-        weightOverlay.style.display = 'block';
-        const w = weights[index];
-        weightOverlay.textContent = w > 0 ? `+${w}` : w;
-        
-        weightOverlay.classList.remove('best-move', 'weight-neutral', 'weight-good', 'weight-bad');
-        
-        if (bestIndex !== null && index === bestIndex) {
-            weightOverlay.classList.add('best-move');
-        } else if (w > 0) {
-            weightOverlay.classList.add('weight-good');
-        } else if (w < 0) {
-            weightOverlay.classList.add('weight-bad');
-        } else {
-            weightOverlay.classList.add('weight-neutral');
-        }
+// Populate Genre Pills in Dashboard Sidebar
+function populateGenres() {
+    const container = document.getElementById("dashboard-genre-pills");
+    container.innerHTML = "";
+    genresList.forEach(genre => {
+        const pill = document.createElement("button");
+        pill.className = `genre-pill ${state.customGenreWeights[genre] > 0 ? 'active' : ''}`;
+        pill.innerHTML = `
+            <span class="plus-icon">${state.customGenreWeights[genre] > 0 ? '✓' : '+'}</span>
+            ${genre}
+        `;
+        pill.onclick = () => toggleGenreWeight(genre);
+        container.appendChild(pill);
     });
 }
 
-// Clear all weights displays
-function clearWeightsUI() {
-    cells.forEach(cell => {
-        const weightOverlay = cell.querySelector('.ai-weight');
-        weightOverlay.textContent = '';
-        weightOverlay.style.display = 'none';
-        weightOverlay.classList.remove('best-move', 'weight-neutral', 'weight-good', 'weight-bad');
+// Toggle sidebar genre pill weight
+function toggleGenreWeight(genre) {
+    if (state.activeProfile !== "custom") {
+        // Switch back to custom profile when they interact with preferences
+        document.getElementById("profileSelect").value = "custom";
+        loadProfile("custom");
+    }
+
+    state.customGenreWeights[genre] = state.customGenreWeights[genre] === 0 ? 1.5 : 0;
+    populateGenres();
+    renderAll();
+}
+
+// Populate Catalog filter select
+function populateCatalogFilters() {
+    const filterSelect = document.getElementById("catalog-genre-filter");
+    genresList.forEach(genre => {
+        const option = document.createElement("option");
+        option.value = genre;
+        option.textContent = genre;
+        filterSelect.appendChild(option);
     });
 }
 
-// Selects the index for AI to play
-function calculateAIMove() {
-    const emptyCells = [];
-    board.forEach((val, idx) => { if (val === '') emptyCells.push(idx); });
+// Load a specific profile ratings into memory
+function loadProfile(profileKey) {
+    state.activeProfile = profileKey;
+    
+    // Update UI badge
+    const badge = document.getElementById("profile-badge");
+    badge.textContent = profileKey === "custom" ? "Custom" : "Pre-built";
 
-    if (emptyCells.length === 0) return null;
-
-    logMessage("Analyzing board state tree...");
-
-    // 1. Easy mode: pure random
-    if (difficulty === 'novice') {
-        const randomIdx = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        logMessage(`[Novice Mode] Playing random move at Cell ${randomIdx}.`);
-        return randomIdx;
+    if (profileKey === "custom") {
+        // Reset custom weights but keep custom ratings
+        genresList.forEach(g => state.customGenreWeights[g] = 0);
+    } else {
+        // Import mock user ratings
+        state.customRatings = { ...mockUsers[profileKey].ratings };
+        // Reset active genre weights (mock profiles drive recommendations purely on rated items)
+        genresList.forEach(g => state.customGenreWeights[g] = 0);
     }
 
-    // Calculate minimax scores for display and logic
-    const { weights, nodeCount, pruneCount } = getMoveWeights();
-    
-    // Find best moves (maximizing 'O')
-    let maxVal = -Infinity;
-    let bestMoves = [];
-    
-    for (let cell in weights) {
-        if (weights[cell] > maxVal) {
-            maxVal = weights[cell];
-            bestMoves = [parseInt(cell)];
-        } else if (weights[cell] === maxVal) {
-            bestMoves.push(parseInt(cell));
-        }
-    }
-    
-    const absoluteBestMove = bestMoves[Math.floor(Math.random() * bestMoves.length)];
-    
-    // Render the scores onto grid so players can visualize them during the thinking delay
-    updateWeightsUI(weights, absoluteBestMove);
-
-    logMessage(`Minimax stats: ${nodeCount} nodes evaluated, ${pruneCount} branches pruned.`);
-    
-    // Write detailed calculations into the logs
-    for (let cell in weights) {
-        const sign = weights[cell] > 0 ? '+' : '';
-        logMessage(`-> Cell ${cell} score: ${sign}${weights[cell]}`);
-    }
-
-    // 2. Challenging mode: 75% chance best move, 25% chance random move
-    if (difficulty === 'challenging') {
-        if (Math.random() > 0.75 && emptyCells.length > 1) {
-            // Pick a non-best move if available, or just a random move
-            const filteredMoves = emptyCells.filter(idx => idx !== absoluteBestMove);
-            const fallbackMove = filteredMoves[Math.floor(Math.random() * filteredMoves.length)];
-            logMessage(`[Challenging Mode] Mercy event! AI selected sub-optimal Cell ${fallbackMove} (Best was ${absoluteBestMove}).`);
-            return fallbackMove;
-        }
-    }
-
-    // 3. Unbeatable or fallback
-    logMessage(`Optimal move chosen: Cell ${absoluteBestMove} (weight rating: ${maxVal > 0 ? '+' : ''}${maxVal})`);
-    return absoluteBestMove;
+    populateGenres();
+    renderAll();
 }
 
-// Executes the AI's step
-function handleAIMove() {
-    if (!isGameActive) return;
+// Change algorithm type (Content vs Collaborative)
+function setAlgorithm(algo) {
+    state.activeAlgorithm = algo;
     
-    aiIsThinking = true;
-    statusText.innerHTML = `<span>AI Player thinking...</span>`;
-    
-    // Play subtle quick sound on tick start
-    audio.play('think');
+    const contentBtn = document.getElementById("algo-content-btn");
+    const collabBtn = document.getElementById("algo-collab-btn");
+    const statusText = document.getElementById("engine-status-text");
 
-    // Add artificial planning delay to allow human to view logs and weights overlay
-    setTimeout(() => {
-        const moveIdx = calculateAIMove();
+    if (algo === "content") {
+        contentBtn.classList.add("active");
+        collabBtn.classList.remove("active");
+        statusText.textContent = "Engine Online (Content-Based)";
+    } else {
+        contentBtn.classList.remove("active");
+        collabBtn.classList.add("active");
+        statusText.textContent = "Engine Online (Collaborative)";
+    }
+
+    renderAll();
+}
+
+// Get active ratings for calculations
+function getActiveRatings() {
+    if (state.activeProfile === "custom") {
+        return state.customRatings;
+    } else {
+        return mockUsers[state.activeProfile].ratings;
+    }
+}
+
+// --- RECOMMENDATION ENGINES ---
+
+// 1. Content-Based Recommendation Algorithm
+function calculateContentRecommendations() {
+    const activeRatings = getActiveRatings();
+    
+    // Construct User Profile Vector
+    const profileVector = {};
+    genresList.forEach(genre => {
+        profileVector[genre] = state.customGenreWeights[genre]; // start with genre pill boosts
+    });
+
+    // Add weights from rated movies: positive rating = positive boost, negative rating = penalty
+    let hasRatings = false;
+    Object.entries(activeRatings).forEach(([movieId, rating]) => {
+        const movie = movies.find(m => m.id == movieId);
+        if (!movie) return;
+        hasRatings = true;
+
+        // Center ratings around 3 (neutral)
+        // 5 stars = +2, 4 stars = +1, 3 stars = 0, 2 stars = -1, 1 star = -2
+        const ratingWeight = rating - 3;
+        movie.genres.forEach(genre => {
+            profileVector[genre] += ratingWeight;
+        });
+    });
+
+    // Calculate length (magnitude) of User Vector
+    let userMagSq = 0;
+    genresList.forEach(genre => {
+        userMagSq += profileVector[genre] * profileVector[genre];
+    });
+    const userMag = Math.sqrt(userMagSq);
+
+    // If active profile has no preferences or ratings, similarity is not computable
+    const hasPills = Object.values(state.customGenreWeights).some(w => w > 0);
+    if (!hasRatings && !hasPills) {
+        return [];
+    }
+
+    const recommendations = [];
+
+    movies.forEach(movie => {
+        // If movie is already rated, skip recommending it
+        if (activeRatings[movie.id] !== undefined) return;
+
+        // Build movie binary genre vector and calculate magnitude
+        let movieDot = 0;
+        let movieMagSq = 0;
+
+        genresList.forEach(genre => {
+            const hasGenre = movie.genres.includes(genre) ? 1 : 0;
+            movieDot += profileVector[genre] * hasGenre;
+            movieMagSq += hasGenre * hasGenre;
+        });
+
+        const movieMag = Math.sqrt(movieMagSq);
+
+        // Cosine Similarity
+        let score = 0;
+        if (userMag > 0 && movieMag > 0) {
+            score = movieDot / (userMag * movieMag);
+        }
+
+        // Clip negative similarities to 0 for presentation
+        score = Math.max(0, score);
+
+        recommendations.push({
+            movie,
+            score: Math.round(score * 100) // Percentage similarity
+        });
+    });
+
+    // Sort by recommendation score descending
+    recommendations.sort((a, b) => b.score - a.score);
+    return recommendations;
+}
+
+// 2. Collaborative Filtering Recommendation Algorithm
+function calculateCollaborativeRecommendations() {
+    const activeRatings = getActiveRatings();
+    
+    // Check if the user has rated anything
+    const activeMovieIds = Object.keys(activeRatings);
+    if (activeMovieIds.length === 0) {
+        return [];
+    }
+
+    // Build User Rating Vector
+    // Treat unrated movies as 0 in simple raw cosine similarity
+    const activeVector = movies.map(m => activeRatings[m.id] || 0);
+
+    // Calculate Magnitude of Active User Ratings Vector
+    let activeMagSq = 0;
+    activeVector.forEach(val => activeMagSq += val * val);
+    const activeMag = Math.sqrt(activeMagSq);
+
+    if (activeMag === 0) return [];
+
+    // Compute User-User Cosine Similarity with all mock users
+    const similarities = {};
+    Object.entries(mockUsers).forEach(([key, user]) => {
+        // Skip comparing user with themselves
+        if (key === state.activeProfile) return;
+
+        const otherVector = movies.map(m => user.ratings[m.id] || 0);
         
-        if (moveIdx !== null) {
-            makeMove(moveIdx, 'O');
-            
-            // Post-move state check
-            const check = checkWinner(board);
-            if (check) {
-                endGame(check);
-            } else {
-                currentPlayer = 'X';
-                statusText.innerHTML = `<span>Your turn (X)</span>`;
-                toggleActiveScorecard('X');
-                aiIsThinking = false;
-            }
-        } else {
-            aiIsThinking = false;
+        let dotProduct = 0;
+        let otherMagSq = 0;
+
+        for (let i = 0; i < movies.length; i++) {
+            dotProduct += activeVector[i] * otherVector[i];
+            otherMagSq += otherVector[i] * otherVector[i];
         }
-    }, 700);
+
+        const otherMag = Math.sqrt(otherMagSq);
+        const similarity = otherMag > 0 ? dotProduct / (activeMag * otherMag) : 0;
+        similarities[key] = similarity;
+    });
+
+    const recommendations = [];
+
+    movies.forEach(movie => {
+        // Skip already rated movies
+        if (activeRatings[movie.id] !== undefined) return;
+
+        let weightedRatingSum = 0;
+        let similaritySum = 0;
+
+        // Predict active user rating using weighted sum of mock user scores
+        Object.entries(mockUsers).forEach(([key, user]) => {
+            if (key === state.activeProfile) return;
+
+            const otherRating = user.ratings[movie.id];
+            const sim = similarities[key];
+
+            // Only count users who rated this movie and have positive similarity
+            if (otherRating !== undefined && sim > 0) {
+                weightedRatingSum += sim * otherRating;
+                similaritySum += sim;
+            }
+        });
+
+        let predictedRating = 0;
+        if (similaritySum > 0) {
+            predictedRating = weightedRatingSum / similaritySum;
+        }
+
+        if (predictedRating > 0) {
+            recommendations.push({
+                movie,
+                score: Math.round(predictedRating * 10) / 10 // Rounded to 1 decimal place (1.0 to 5.0)
+            });
+        }
+    });
+
+    // Sort by predicted rating descending
+    recommendations.sort((a, b) => b.score - a.score);
+    return recommendations;
 }
 
-// Places marker 'X' or 'O' in a board slot
-function makeMove(index, player) {
-    board[index] = player;
-    const cell = cells[index];
-    cell.classList.add('taken');
-    
-    // Insert SVG
-    if (player === 'X') {
-        cell.innerHTML += getXSVG();
-        audio.play('move-x');
-        triggerParticles(cell, getComputedStyle(document.documentElement).getPropertyValue('--accent-x').trim());
+// --- DOM RENDERING LOGIC ---
+
+// Render recommendations in Dashboard tab
+function renderDashboardRecommendations() {
+    const grid = document.getElementById("recommended-movies-grid");
+    grid.innerHTML = "";
+
+    let recommendations = [];
+    if (state.activeAlgorithm === "content") {
+        recommendations = calculateContentRecommendations();
     } else {
-        cell.innerHTML += getOSVG();
-        audio.play('move-o');
-        triggerParticles(cell, getComputedStyle(document.documentElement).getPropertyValue('--accent-o').trim());
+        recommendations = calculateCollaborativeRecommendations();
     }
-}
 
-// Toggle scorebox highlights
-function toggleActiveScorecard(player) {
-    if (player === 'X') {
-        scoreBoxX.classList.add('active-player-x');
-        scoreBoxO.classList.remove('active-player-o');
-    } else if (player === 'O') {
-        scoreBoxO.classList.add('active-player-o');
-        scoreBoxX.classList.remove('active-player-x');
-    } else {
-        scoreBoxX.classList.remove('active-player-x');
-        scoreBoxO.classList.remove('active-player-o');
-    }
-}
-
-// Handle Human clicking a cell
-function handleCellClick(e) {
-    const cell = e.currentTarget;
-    const index = parseInt(cell.getAttribute('data-index'));
-
-    if (board[index] !== '' || !isGameActive || aiIsThinking) return;
-
-    // Place Human move
-    makeMove(index, currentPlayer);
-    
-    // Check game condition
-    const check = checkWinner(board);
-    if (check) {
-        endGame(check);
+    if (recommendations.length === 0) {
+        // Empty State card
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🎬</div>
+                <h3>Feed is Empty</h3>
+                <p>To view recommendations, go to the <strong>Movie Catalog</strong> tab and rate a few movies or check some genre checkboxes in the user profile panel.</p>
+            </div>
+        `;
         return;
     }
 
-    // Switch turns
-    if (gameMode === 'ai-vs-human') {
-        currentPlayer = 'O';
-        toggleActiveScorecard('O');
-        handleAIMove();
-    } else {
-        // Human vs Human local mode
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        statusText.innerHTML = `<span>Player ${currentPlayer}'s turn</span>`;
-        toggleActiveScorecard(currentPlayer);
-    }
+    recommendations.forEach(rec => {
+        const card = createMovieCard(rec.movie, rec.score, state.activeAlgorithm);
+        grid.appendChild(card);
+    });
 }
 
-// Standard completion sequence
-function endGame(check) {
-    isGameActive = false;
-    toggleActiveScorecard(null);
-    clearWeightsUI();
+// Create movie card DOM component
+function createMovieCard(movie, score, algoMode, showRatingControl = true) {
+    const activeRatings = getActiveRatings();
+    const userRating = activeRatings[movie.id] || 0;
 
-    if (check.winner === 'Tie') {
-        statusText.innerHTML = `<span>It's a tie!</span>`;
-        scores.Ties++;
-        audio.play('draw');
-        logMessage("Game ended in a tie.");
-    } else {
-        statusText.innerHTML = `<span>Player ${check.winner} wins!</span>`;
-        scores[check.winner]++;
-        
-        // Play victory/defeat sounds
-        if (gameMode === 'ai-vs-human') {
-            if (check.winner === 'X') {
-                audio.play('win');
-                logMessage("Human player won! (Error in AI calculation matrix)");
-            } else {
-                audio.play('lose');
-                logMessage("AI Agent won!");
-            }
+    const card = document.createElement("div");
+    card.className = "movie-card";
+
+    // Setup genre HTML
+    const genresHTML = movie.genres.map(g => `<span class="card-genre-tag">${g}</span>`).join("");
+
+    // Setup score display based on recommendation mode
+    let scoreDisplay = "";
+    if (score !== undefined) {
+        if (algoMode === "content") {
+            scoreDisplay = `<div class="score-badge">🎯 ${score}% Match</div>`;
         } else {
-            audio.play('win');
-            logMessage(`Player ${check.winner} won!`);
+            scoreDisplay = `<div class="score-badge">⭐ ${score} Pred</div>`;
+        }
+    }
+
+    card.innerHTML = `
+        <div class="card-backdrop" style="background: ${movie.backdrop}">
+            ${scoreDisplay}
+            <div class="card-genres">${genresHTML}</div>
+        </div>
+        <div class="card-body">
+            <div class="movie-title-row">
+                <h4 class="card-title">${movie.title}</h4>
+                <span class="card-year">${movie.year}</span>
+            </div>
+            <p class="card-description">${movie.description}</p>
+            <div class="card-footer">
+                <div class="avg-rating">
+                    <span class="star-icon">★</span>
+                    <span>${movie.rating} Avg</span>
+                </div>
+                
+                ${showRatingControl ? `
+                    <div class="user-rating-wrapper">
+                        <span class="user-rating-label">${userRating > 0 ? `Your Rating: ${userRating}` : 'Rate Movie'}</span>
+                        <div class="star-rating">
+                            <input type="radio" id="star5-${movie.id}-${algoMode}" name="rating-${movie.id}-${algoMode}" value="5" ${userRating === 5 ? 'checked' : ''} onclick="rateMovie(${movie.id}, 5)">
+                            <label for="star5-${movie.id}-${algoMode}">★</label>
+                            
+                            <input type="radio" id="star4-${movie.id}-${algoMode}" name="rating-${movie.id}-${algoMode}" value="4" ${userRating === 4 ? 'checked' : ''} onclick="rateMovie(${movie.id}, 4)">
+                            <label for="star4-${movie.id}-${algoMode}">★</label>
+                            
+                            <input type="radio" id="star3-${movie.id}-${algoMode}" name="rating-${movie.id}-${algoMode}" value="3" ${userRating === 3 ? 'checked' : ''} onclick="rateMovie(${movie.id}, 3)">
+                            <label for="star3-${movie.id}-${algoMode}">★</label>
+                            
+                            <input type="radio" id="star2-${movie.id}-${algoMode}" name="rating-${movie.id}-${algoMode}" value="2" ${userRating === 2 ? 'checked' : ''} onclick="rateMovie(${movie.id}, 2)">
+                            <label for="star2-${movie.id}-${algoMode}">★</label>
+                            
+                            <input type="radio" id="star1-${movie.id}-${algoMode}" name="rating-${movie.id}-${algoMode}" value="1" ${userRating === 1 ? 'checked' : ''} onclick="rateMovie(${movie.id}, 1)">
+                            <label for="star1-${movie.id}-${algoMode}">★</label>
+                        </div>
+                        <button class="reset-rating-btn ${userRating > 0 ? 'visible' : ''}" onclick="resetRating(${movie.id})">Clear Rating</button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    return card;
+}
+
+// User rates a movie
+function rateMovie(movieId, rating) {
+    if (state.activeProfile !== "custom") {
+        // Copy state to custom profile when user interacts
+        state.customRatings = { ...mockUsers[state.activeProfile].ratings };
+        state.activeProfile = "custom";
+        document.getElementById("profileSelect").value = "custom";
+        document.getElementById("profile-badge").textContent = "Custom";
+        populateGenres();
+    }
+
+    state.customRatings[movieId] = rating;
+    renderAll();
+}
+
+// Reset rating
+function resetRating(movieId) {
+    if (state.activeProfile !== "custom") {
+        state.customRatings = { ...mockUsers[state.activeProfile].ratings };
+        state.activeProfile = "custom";
+        document.getElementById("profileSelect").value = "custom";
+        document.getElementById("profile-badge").textContent = "Custom";
+        populateGenres();
+    }
+
+    delete state.customRatings[movieId];
+    renderAll();
+}
+
+// Render active ratings list in dashboard sidebar
+function renderDashboardRatingsList() {
+    const list = document.getElementById("user-rated-list");
+    const countSpan = document.getElementById("user-ratings-count");
+    list.innerHTML = "";
+
+    const activeRatings = getActiveRatings();
+    const entries = Object.entries(activeRatings);
+    countSpan.textContent = entries.length;
+
+    if (entries.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 1rem;">No rated movies yet</div>`;
+        return;
+    }
+
+    // Sort rated list by rating descending
+    entries.sort((a, b) => b[1] - a[1]);
+
+    entries.forEach(([id, stars]) => {
+        const movie = movies.find(m => m.id == id);
+        if (!movie) return;
+
+        const item = document.createElement("div");
+        item.className = "rated-movie-item";
+
+        let starsHTML = "";
+        for (let i = 1; i <= 5; i++) {
+            starsHTML += `<span style="color: ${i <= stars ? 'var(--star-color)' : 'var(--text-dim)'}">★</span>`;
         }
 
-        // Highlight win line
-        check.line.forEach(idx => {
-            cells[idx].classList.add('winning-cell');
-            const color = check.winner === 'X' ? 
-                getComputedStyle(document.documentElement).getPropertyValue('--accent-x').trim() : 
-                getComputedStyle(document.documentElement).getPropertyValue('--accent-o').trim();
-            triggerParticles(cells[idx], color);
+        item.innerHTML = `
+            <div>
+                <div class="rated-movie-title" title="${movie.title}">${movie.title}</div>
+                <div class="rated-movie-genre">${movie.genres[0]}</div>
+            </div>
+            <div class="rating-stars-small">
+                ${starsHTML}
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// Render Movie Catalog tab
+function renderMovieCatalog() {
+    const grid = document.getElementById("catalog-movies-grid");
+    grid.innerHTML = "";
+
+    const filtered = movies.filter(movie => {
+        // Genre match
+        const matchesGenre = state.genreFilters === "all" || movie.genres.includes(state.genreFilters);
+        // Search term match
+        const term = state.searchQuery.toLowerCase();
+        const matchesSearch = movie.title.toLowerCase().includes(term) || 
+                              movie.description.toLowerCase().includes(term) ||
+                              movie.genres.some(g => g.toLowerCase().includes(term));
+        return matchesGenre && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state-icon">🔍</div>
+                <h3>No Movies Found</h3>
+                <p>Try refining your search terms or genre filter.</p>
+            </div>
+        `;
+        return;
+    }
+
+    filtered.forEach(movie => {
+        // Render without scores on catalog
+        const card = createMovieCard(movie, undefined, "catalog", true);
+        grid.appendChild(card);
+    });
+}
+
+// Filter triggers on input/select in Catalog
+function filterCatalog() {
+    state.genreFilters = document.getElementById("catalog-genre-filter").value;
+    state.searchQuery = document.getElementById("catalog-search").value;
+    renderMovieCatalog();
+}
+
+// Render Sandbox calculations layout
+function renderSandboxCalculations() {
+    const container = document.getElementById("sandbox-calculations-panel");
+    // Clear dynamic portion (keep header title)
+    container.innerHTML = `<h3 class="panel-title">Live Calculations</h3>`;
+
+    const activeRatings = getActiveRatings();
+
+    if (state.activeAlgorithm === "content") {
+        // Vector aggregation details
+        const profileVector = {};
+        genresList.forEach(genre => {
+            profileVector[genre] = state.customGenreWeights[genre];
         });
-    }
 
-    localStorage.setItem('ttt_scores', JSON.stringify(scores));
-    updateScoreboardUI();
-}
+        Object.entries(activeRatings).forEach(([movieId, rating]) => {
+            const movie = movies.find(m => m.id == movieId);
+            if (!movie) return;
+            const ratingWeight = rating - 3;
+            movie.genres.forEach(genre => {
+                profileVector[genre] += ratingWeight;
+            });
+        });
 
-// Resets board without clearing scores
-function restartGame() {
-    audio.play('click');
-    board = Array(9).fill('');
-    isGameActive = true;
-    aiIsThinking = false;
-    currentPlayer = 'X';
-    
-    cells.forEach(cell => {
-        cell.classList.remove('taken', 'winning-cell');
-        // Retain the weights overlay placeholder
-        const index = cell.getAttribute('data-index');
-        cell.innerHTML = `<div class="ai-weight" data-cell="${index}">0</div>`;
-    });
-    
-    clearWeightsUI();
-    toggleActiveScorecard('X');
-    statusText.innerHTML = `<span>Your turn (X)</span>`;
-    
-    logMessage("Game board reset. Ready for moves.");
-}
+        // Compute magnitude
+        let userMagSq = 0;
+        genresList.forEach(genre => userMagSq += profileVector[genre] * profileVector[genre]);
+        const userMag = Math.sqrt(userMagSq).toFixed(2);
 
-// Complete variables configuration reset
-function resetAll() {
-    scores = { X: 0, O: 0, Ties: 0 };
-    localStorage.setItem('ttt_scores', JSON.stringify(scores));
-    updateScoreboardUI();
-    restartGame();
-    logMessage("System memory reset. Scoreboard cleared.");
-}
+        // Vector blocks HTML
+        let blocksHTML = "";
+        genresList.forEach(genre => {
+            const val = profileVector[genre];
+            let levelClass = val > 0 ? "high" : (val === 0 ? "zero" : "negative");
+            blocksHTML += `
+                <div class="vector-block">
+                    <div class="vector-label">${genre.substring(0, 5)}</div>
+                    <div class="vector-val ${levelClass}">${val > 0 ? '+' : ''}${val.toFixed(1)}</div>
+                </div>
+            `;
+        });
 
-// Config page settings handlers
-function handleModeChange() {
-    gameMode = modeSelect.value;
-    audio.play('click');
+        const vectorSection = document.createElement("div");
+        vectorSection.innerHTML = `
+            <h4 style="margin-bottom: 0.5rem; font-family:'Outfit';">1. Active Profile Vector (U)</h4>
+            <p class="math-explanation">Sum of weights centered around 3 (neutral) + active genre pill weights (+1.5):</p>
+            <div class="vector-container">${blocksHTML}</div>
+            <p class="math-explanation" style="margin-top:0.75rem;">Vector magnitude: <strong>||U|| = ${userMag}</strong></p>
+        `;
+        container.appendChild(vectorSection);
 
-    if (gameMode === 'human-vs-human') {
-        difficultyGroup.style.display = 'none';
-        aiDashboard.style.display = 'none';
-        logMessage("Switched to Local Human vs. Human mode.");
-    } else {
-        difficultyGroup.style.display = 'flex';
-        aiDashboard.style.display = 'flex';
-        logMessage(`Switched to AI Agent mode. Difficulty: ${difficulty}.`);
-    }
-    
-    restartGame();
-}
+        // Similarity breakdown table
+        const recommendations = calculateContentRecommendations();
+        if (recommendations.length > 0) {
+            const tableSection = document.createElement("div");
+            tableSection.style.marginTop = "1.5rem";
+            tableSection.innerHTML = `
+                <h4 style="margin-bottom: 0.5rem; font-family:'Outfit';">2. Cosine Similarity Table</h4>
+                <table class="similarity-table">
+                    <thead>
+                        <tr>
+                            <th>Movie</th>
+                            <th>Genres</th>
+                            <th>Cosine Similarity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sandbox-similarity-rows"></tbody>
+                </table>
+            `;
+            container.appendChild(tableSection);
 
-function handleDifficultyChange() {
-    difficulty = difficultySelect.value;
-    audio.play('click');
-    logMessage(`AI Difficulty adjusted to: ${difficulty.toUpperCase()}`);
-    restartGame();
-}
-
-// Settings toggles
-function toggleSound() {
-    audio.enabled = !audio.enabled;
-    localStorage.setItem('ttt_sound_enabled', audio.enabled);
-    updateSoundUI();
-    audio.play('click');
-    logMessage(`Sound output: ${audio.enabled ? 'ON' : 'OFF'}`);
-}
-
-function toggleTheme() {
-    const isLight = document.body.classList.toggle('light-theme');
-    localStorage.setItem('ttt_theme', isLight ? 'light' : 'dark');
-    audio.play('click');
-    
-    if (isLight) {
-        themeIconLight.style.display = 'block';
-        themeIconDark.style.display = 'none';
-        logMessage("Theme preference: LIGHT MODE");
-    } else {
-        themeIconLight.style.display = 'none';
-        themeIconDark.style.display = 'block';
-        logMessage("Theme preference: DARK MODE");
-    }
-}
-
-// Setup Event Listeners
-function setupEventListeners() {
-    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
-    restartBtn.addEventListener('click', restartGame);
-    modeSelect.addEventListener('change', handleModeChange);
-    difficultySelect.addEventListener('change', handleDifficultyChange);
-    soundToggle.addEventListener('click', toggleSound);
-    themeToggle.addEventListener('click', toggleTheme);
-
-    toggleWeights.addEventListener('change', (e) => {
-        audio.play('click');
-        const show = e.target.checked;
-        localStorage.setItem('ttt_show_weights', show);
-        if (show) {
-            document.getElementById('board').classList.add('show-ai-weights');
-            logMessage("AI weight rendering on grid: ENABLED");
+            const tbody = document.getElementById("sandbox-similarity-rows");
+            // Show top 6 matches
+            recommendations.slice(0, 6).forEach(rec => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${rec.movie.title}</td>
+                    <td style="font-size:0.75rem; color:var(--text-muted);">${rec.movie.genres.join(", ")}</td>
+                    <td>
+                        <div class="similarity-bar-container">
+                            <div class="similarity-bar-fill" style="width: ${rec.score}%"></div>
+                        </div>
+                        <span class="sim-val">${rec.score}%</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         } else {
-            document.getElementById('board').classList.remove('show-ai-weights');
-            logMessage("AI weight rendering on grid: DISABLED");
+            const warning = document.createElement("div");
+            warning.className = "math-explanation";
+            warning.style.marginTop = "1rem";
+            warning.textContent = "Rate a movie or enable a genre filter in the profile panel to calculate similarity vectors.";
+            container.appendChild(warning);
         }
-    });
 
-    // Score boxes double-click to clear scores
-    scoreBoxX.addEventListener('dblclick', resetAll);
-    scoreBoxO.addEventListener('dblclick', resetAll);
-    document.getElementById('score-ties').addEventListener('dblclick', resetAll);
+    } else {
+        // Collaborative calculations
+        const activeMovieIds = Object.keys(activeRatings);
+        if (activeMovieIds.length === 0) {
+            const warning = document.createElement("div");
+            warning.className = "math-explanation";
+            warning.style.marginTop = "1rem";
+            warning.textContent = "Rate at least one movie to discover profile correlations with other users.";
+            container.appendChild(warning);
+            return;
+        }
+
+        // Active rating magnitudes
+        const activeVector = movies.map(m => activeRatings[m.id] || 0);
+        let activeMagSq = 0;
+        activeVector.forEach(val => activeMagSq += val * val);
+        const activeMag = Math.sqrt(activeMagSq);
+
+        const similarities = [];
+        Object.entries(mockUsers).forEach(([key, user]) => {
+            if (key === state.activeProfile) return;
+
+            const otherVector = movies.map(m => user.ratings[m.id] || 0);
+            let dotProduct = 0;
+            let otherMagSq = 0;
+
+            for (let i = 0; i < movies.length; i++) {
+                dotProduct += activeVector[i] * otherVector[i];
+                otherMagSq += otherVector[i] * otherVector[i];
+            }
+
+            const otherMag = Math.sqrt(otherMagSq);
+            const sim = otherMag > 0 ? dotProduct / (activeMag * otherMag) : 0;
+            similarities.push({ name: user.name, sim });
+        });
+
+        // Similarity matrix section
+        const simSection = document.createElement("div");
+        simSection.innerHTML = `
+            <h4 style="margin-bottom: 0.5rem; font-family:'Outfit';">1. User Cosine Similarity Metrics</h4>
+            <table class="similarity-table">
+                <thead>
+                    <tr>
+                        <th>Mock User Profile</th>
+                        <th>Cosine Similarity (Sim)</th>
+                    </tr>
+                </thead>
+                <tbody id="sandbox-user-sim-rows"></tbody>
+            </table>
+        `;
+        container.appendChild(simSection);
+
+        const simTbody = document.getElementById("sandbox-user-sim-rows");
+        similarities.sort((a,b) => b.sim - a.sim).forEach(other => {
+            const tr = document.createElement("tr");
+            const scorePct = Math.round(other.sim * 100);
+            tr.innerHTML = `
+                <td style="font-weight:600;">${other.name}</td>
+                <td>
+                    <div class="similarity-bar-container">
+                        <div class="similarity-bar-fill" style="width: ${scorePct}%"></div>
+                    </div>
+                    <span class="sim-val">${other.sim.toFixed(3)}</span>
+                </td>
+            `;
+            simTbody.appendChild(tr);
+        });
+
+        // Dynamic Rating Predictions details
+        const recs = calculateCollaborativeRecommendations();
+        if (recs.length > 0) {
+            const predSection = document.createElement("div");
+            predSection.style.marginTop = "1.5rem";
+            predSection.innerHTML = `
+                <h4 style="margin-bottom: 0.5rem; font-family:'Outfit';">2. Predicted Ratings Matrix</h4>
+                <table class="similarity-table">
+                    <thead>
+                        <tr>
+                            <th>Movie</th>
+                            <th>Weighted Average Math (Σ Sim*Rating / Σ Sim)</th>
+                            <th>Predicted Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sandbox-predicted-rows"></tbody>
+                </table>
+            `;
+            container.appendChild(predSection);
+
+            const predTbody = document.getElementById("sandbox-predicted-rows");
+            recs.slice(0, 5).forEach(rec => {
+                let terms = [];
+                let weightSum = 0;
+                let simSum = 0;
+
+                Object.entries(mockUsers).forEach(([key, user]) => {
+                    if (key === state.activeProfile) return;
+
+                    const r = user.ratings[rec.movie.id];
+                    const sim = similarities.find(s => s.name === user.name).sim;
+
+                    if (r !== undefined && sim > 0) {
+                        terms.push(`(${sim.toFixed(2)} * ${r})`);
+                        weightSum += sim * r;
+                        simSum += sim;
+                    }
+                });
+
+                const formulaText = terms.length > 0 ? 
+                    `${terms.join(" + ")} / ${simSum.toFixed(2)}` : "No ratings overlay";
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${rec.movie.title}</td>
+                    <td style="font-family:monospace; font-size:0.75rem; max-width:200px; overflow-x:auto;">${formulaText}</td>
+                    <td class="sim-val">★ ${rec.score.toFixed(1)}</td>
+                `;
+                predTbody.appendChild(tr);
+            });
+        }
+    }
 }
 
-// Entry Point
-window.addEventListener('DOMContentLoaded', () => {
-    loadSettings();
-    setupEventListeners();
-    logMessage("System initialized. Alpha-Beta minimax engine active. Ready.");
-});
+// Master refresh method for rendering layout
+function renderAll() {
+    renderDashboardRecommendations();
+    renderDashboardRatingsList();
+    renderMovieCatalog();
+    
+    // Check if sandbox is currently visible and update
+    const isSandboxVisible = document.getElementById("tab-sandbox").classList.contains("active");
+    if (isSandboxVisible) {
+        renderSandboxCalculations();
+    }
+}
