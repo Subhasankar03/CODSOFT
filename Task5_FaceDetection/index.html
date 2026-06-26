@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch AI - Smart Recommendation Engine</title>
+    <meta name="description" content="Explore real-time personalized movie recommendations using Content-Based and Collaborative Filtering algorithms with visual math explanations.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">C</div>
+            <div>
+                <h1>CineMatch AI</h1>
+                <div class="tagline">Recommendation Engine</div>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" id="tab-dashboard-btn" onclick="switchTab('dashboard')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                Dashboard
+            </button>
+            <button class="tab-btn" id="tab-catalog-btn" onclick="switchTab('catalog')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                Movie Catalog
+            </button>
+            <button class="tab-btn" id="tab-sandbox-btn" onclick="switchTab('sandbox')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Explanation Sandbox
+            </button>
+        </nav>
+
+        <!-- Profile Bar Switcher -->
+        <div class="profile-bar">
+            <div class="profile-select-wrapper">
+                <label for="profileSelect">Active Profile:</label>
+                <select id="profileSelect" class="profile-select" onchange="loadProfile(this.value)">
+                    <option value="custom">Custom Profile (You)</option>
+                    <option value="alex">Alex (Sci-Fi Fanatic)</option>
+                    <option value="chloe">Chloe (Romance Lover)</option>
+                    <option value="marcus">Marcus (Action & Thriller Buff)</option>
+                    <option value="sophia">Sophia (Drama Devotee)</option>
+                    <option value="ethan">Ethan (Indie & Classics)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. RECOMMENDATION DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                
+                <!-- Sidebar Controls -->
+                <aside class="sidebar">
+                    <!-- Current User Stats Panel -->
+                    <div class="panel pref-panel">
+                        <h3 class="panel-title">
+                            User Profile
+                            <span class="badge" id="profile-badge">Custom</span>
+                        </h3>
+                        
+                        <!-- Toggle Algorithm -->
+                        <div class="pref-group">
+                            <label>Recommendation Mode</label>
+                            <div class="algorithm-selector">
+                                <button class="algo-btn active" id="algo-content-btn" onclick="setAlgorithm('content')">Content-Based</button>
+                                <button class="algo-btn" id="algo-collab-btn" onclick="setAlgorithm('collaborative')">Collaborative</button>
+                            </div>
+                        </div>
+
+                        <!-- Preferred Genres -->
+                        <div class="pref-group">
+                            <label>Genre Weights (Content-Based)</label>
+                            <div class="genre-pills" id="dashboard-genre-pills">
+                                <!-- Generated Dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Rated Movies List -->
+                        <div class="pref-group">
+                            <label>Your Ratings (<span id="user-ratings-count">0</span>)</label>
+                            <div class="rated-movies-list" id="user-rated-list">
+                                <!-- Generated Dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Recommendation Output -->
+                <div class="main-output">
+                    <div class="recommendations-header">
+                        <h2>Personalized Recommendations</h2>
+                        <div class="engine-status">
+                            <span class="status-dot"></span>
+                            <span id="engine-status-text">Engine Online (Content-Based)</span>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Movies Grid -->
+                    <div class="movies-grid" id="recommended-movies-grid">
+                        <!-- Movies rendered dynamically by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. MOVIE CATALOG TAB -->
+        <section id="tab-catalog" class="tab-content">
+            <div class="catalog-controls">
+                <h2>Browse Catalog</h2>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; width: 100%; max-width: 800px; justify-content: flex-end;">
+                    <!-- Genre filter dropdown -->
+                    <div class="profile-select-wrapper" style="background: var(--bg-surface);">
+                        <label for="catalog-genre-filter">Genre:</label>
+                        <select id="catalog-genre-filter" class="profile-select" onchange="filterCatalog()">
+                            <option value="all">All Genres</option>
+                            <!-- Genres populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="catalog-search" class="search-input" placeholder="Search by title, description..." onkeyup="filterCatalog()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Library Movie Grid -->
+            <div class="movies-grid" id="catalog-movies-grid">
+                <!-- Catalog Movies rendered dynamically by JS -->
+            </div>
+        </section>
+
+        <!-- 3. EXPLANATION SANDBOX TAB -->
+        <section id="tab-sandbox" class="tab-content">
+            <div class="sandbox-grid">
+                
+                <!-- Algorithm Concepts and Formulas -->
+                <div class="panel">
+                    <h3 class="panel-title">How the Math Works</h3>
+                    
+                    <div class="formula-card">
+                        <div class="formula-title">Cosine Similarity Formula</div>
+                        <p class="math-explanation">Measures the cosine of the angle between two multi-dimensional vectors. It evaluates directional orientation rather than magnitude.</p>
+                        <div class="formula-math">
+                            Cosine Similarity = (A • B) / (||A|| * ||B||)<br>
+                            = Σ(A_i * B_i) / [ √Σ(A_i^2) * √Σ(B_i^2) ]
+                        </div>
+                        <p class="math-explanation">A similarity score of <strong>1.0</strong> means identical direction (complete preference match); <strong>0.0</strong> means orthogonal vectors (no preference similarity).</p>
+                    </div>
+
+                    <div class="formula-card">
+                        <div class="formula-title">Content-Based Profiling</div>
+                        <p class="math-explanation">We create a <strong>User Preference Vector</strong> based on your high ratings (4-5 stars) and active genre pills. Then, we calculate the Cosine Similarity between this profile vector and each movie's binary genre vector.</p>
+                        <p class="math-explanation" style="margin-top:0.5rem;">Movie vectors contain 1 if the movie belongs to the genre, and 0 otherwise.</p>
+                    </div>
+
+                    <div class="formula-card">
+                        <div class="formula-title">User-Based Collaborative Filtering</div>
+                        <p class="math-explanation">We calculate the rating overlap similarity between your profile and each of our 5 mock users. We then predict your rating for a movie you haven't seen by taking the weighted average of other users' ratings, weighted by their similarity to you:</p>
+                        <div class="formula-math">
+                            Predicted Rating = Σ(Similarity_u * Rating_u) / Σ(|Similarity_u|)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Mathematical Sandbox Calculations -->
+                <div class="panel" id="sandbox-calculations-panel">
+                    <h3 class="panel-title">Live Calculations</h3>
+                    
+                    <div id="sandbox-active-algorithm">
+                        <!-- Populated dynamically to reflect active calculations -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
